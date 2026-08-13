@@ -49,7 +49,7 @@
     <h1>Local Media Editor</h1>
     <p data-i18n="subtitle">Edit video & audio 100% di perangkatmu</p>
     <div class="badge"><span>🔒</span> <span data-i18n="badge">Tidak ada upload • Privasi terjaga</span></div>
-    <div class="lang-switch">
+    <div class="lang-switch" style="display: none;">
       <button class="lang-btn active" id="langId" onclick="setLang('id')">🇮🇩 ID</button>
       <button class="lang-btn" id="langEn" onclick="setLang('en')">🇬🇧 EN</button>
     </div>
@@ -168,7 +168,7 @@ import {
 } from "https://cdn.jsdelivr.net/npm/mediabunny@1.53.1/+esm";
 
 let currentFile=null, currentFileName="", isVideo=true, outputBlob=null;
-let currentLang = localStorage.getItem("lme_lang") || "id";
+let currentLang = localStorage.getItem("lme_lang") || "en";
 const $ = id => document.getElementById(id);
 
 const I18N = {
