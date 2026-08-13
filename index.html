@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+<<<<<<< HEAD
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Local Media Editor — Mediabunny</title>
@@ -158,6 +159,121 @@
     <span data-i18n="footer1">Diproses di browser dengan Mediabunny + WebCodecs.</span><br>
     <span data-i18n="footer2">File tidak pernah di-upload ke server.</span>
   </footer>
+=======
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>Local Media Editor — Mediabunny</title>
+<style>
+:root{--bg:#0f1115;--surface:#1a1d24;--surface2:#242830;--border:#2e333d;--text:#e8eaed;--text-dim:#9aa0a6;--accent:#7c5cff;--success:#34d399;--danger:#f87171;--radius:14px}*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:16px;padding-bottom:80px}.container{max-width:720px;margin:0 auto}header{text-align:center;margin-bottom:24px;padding-top:12px}header h1{font-size:1.55rem;font-weight:700;background:linear-gradient(135deg,#a78bfa,#7c5cff,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}header p{color:var(--text-dim);font-size:.9rem}.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(52,211,153,.12);color:var(--success);font-size:.75rem;font-weight:600;padding:4px 10px;border-radius:999px;margin-top:10px}.lang-switch{display:flex;gap:6px;justify-content:center;margin-top:12px}.lang-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:6px 12px;font-size:.78rem;font-weight:600;cursor:pointer}.lang-btn.active{background:rgba(124,92,255,.2);border-color:var(--accent);color:#c4b5fd}.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:16px}.card-title{font-size:.95rem;font-weight:600;margin-bottom:14px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:10px;padding:12px 18px;font-size:.95rem;font-weight:600;cursor:pointer;width:100%}.btn:disabled{opacity:.45;cursor:not-allowed}.btn-primary{background:var(--accent);color:#fff}.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}.btn-success{background:var(--success);color:#064e3b}.dropzone{border:2px dashed var(--border);border-radius:var(--radius);padding:36px 20px;text-align:center;cursor:pointer;background:var(--surface2)}.hidden{display:none!important}.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:14px}.tab{flex-shrink:0;padding:8px 14px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-size:.82rem;font-weight:600;cursor:pointer}.tab.active{background:rgba(124,92,255,.18);border-color:var(--accent);color:#c4b5fd}.tab-content{display:none}.tab-content.active{display:block}.form-group{margin-bottom:12px}.form-group label{display:block;font-size:.8rem;color:var(--text-dim);margin-bottom:6px}.form-group input,.form-group select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:.95rem}.progress-bar{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;margin:12px 0}.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),#60a5fa);width:0%;transition:width .25s;border-radius:4px}.preview-wrap{background:#000;border-radius:12px;overflow:hidden;margin-bottom:12px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}.preview-wrap video,.preview-wrap audio{width:100%;max-height:320px}.hint{font-size:.78rem;color:var(--text-dim);margin-top:8px;line-height:1.4}.status{font-size:.85rem;color:var(--text-dim);margin-top:10px;line-height:1.5}footer{text-align:center;margin-top:28px;color:var(--text-dim);font-size:.75rem}.engine-ok{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.35);color:var(--success);border-radius:10px;padding:12px 14px;font-size:.85rem;margin-bottom:16px;text-align:center}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Local Media Editor</h1>
+<p data-i18n="subtitle">Edit video & audio 100% di perangkatmu</p>
+<div class="badge"><span>🔒</span> <span data-i18n="badge">Tidak ada upload • Privasi terjaga</span></div>
+<div class="lang-switch">
+<button class="lang-btn active" id="langId" onclick="setLang('id')">🇮🇩 ID</button>
+<button class="lang-btn" id="langEn" onclick="setLang('en')">🇬🇧 EN</button>
+</div>
+</header>
+<div class="engine-ok" data-i18n="engine_ok">✅ Engine siap (Mediabunny + WebCodecs) — tanpa unduh 31 MB</div>
+<div class="card" id="uploadSection">
+<div class="card-title">📁 <span data-i18n="pick_media">Pilih Media</span></div>
+<div class="dropzone" id="dropzone">
+<div style="font-size:2.4rem;margin-bottom:8px">🎬</div>
+<strong data-i18n="drop_hint">Klik atau seret file ke sini</strong>
+<p style="color:var(--text-dim);font-size:.9rem;margin-top:8px">MP4, WebM, MOV, MKV, MP3, WAV…</p>
+</div>
+<input type="file" id="fileInput" accept="video/*,audio/*" style="display:none"/>
+<div id="fileInfo" style="margin-top:12px;font-size:.8rem;color:var(--text-dim)"></div>
+</div>
+<div class="card hidden" id="editorSection">
+<div class="card-title">▶️ <span data-i18n="preview">Preview</span></div>
+<div class="preview-wrap">
+<video id="previewVideo" controls playsinline></video>
+<audio id="previewAudio" controls class="hidden"></audio>
+</div>
+<div class="tabs">
+<div class="tab active" data-tab="trim" data-i18n="tab_trim">Potong</div>
+<div class="tab" data-tab="extract" data-i18n="tab_extract">Ekstrak Audio</div>
+<div class="tab" data-tab="volume" data-i18n="tab_volume">Volume</div>
+<div class="tab" data-tab="speed" data-i18n="tab_speed">Kecepatan</div>
+<div class="tab" data-tab="rotate" data-i18n="tab_rotate">Rotasi</div>
+<div class="tab" data-tab="convert" data-i18n="tab_convert">Konversi</div>
+<div class="tab" data-tab="compress" data-i18n="tab_compress">Kompres</div>
+</div>
+<div class="tab-content active" id="tab-trim">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div class="form-group"><label data-i18n="label_start">Mulai (detik)</label><input type="number" id="trimStart" value="0" min="0" step="0.1"/></div>
+<div class="form-group"><label data-i18n="label_end">Akhir (detik)</label><input type="number" id="trimEnd" value="" min="0" step="0.1" placeholder="kosong=akhir"/></div>
+</div>
+</div>
+<div class="tab-content" id="tab-extract">
+<div class="form-group"><label data-i18n="label_format">Format</label>
+<select id="extractFormat"><option value="mp3">MP3</option><option value="wav">WAV</option><option value="ogg">OGG</option><option value="aac">AAC/M4A</option></select>
+</div>
+</div>
+<div class="tab-content" id="tab-volume">
+<div class="form-group"><label data-i18n="label_volume">Volume (0 – 2)</label>
+<input type="number" id="volumeValue" value="1" min="0" max="3" step="0.1"/>
+</div>
+<p class="hint" data-i18n="hint_volume">1 = normal, 0.5 = lebih pelan, 2 = lebih keras.</p>
+</div>
+<div class="tab-content" id="tab-speed">
+<div class="form-group"><label data-i18n="label_speed">Kecepatan</label>
+<select id="speedValue">
+<option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option>
+<option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option>
+</select>
+</div>
+<p class="hint" data-i18n="hint_speed">Pitch audio ikut berubah (mirip mengubah kecepatan tape).</p>
+</div>
+<div class="tab-content" id="tab-rotate">
+<div class="form-group"><label data-i18n="label_rotate">Rotasi</label>
+<select id="rotateValue"><option value="0">0°</option><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select>
+</div>
+</div>
+<div class="tab-content" id="tab-convert">
+<div class="form-group"><label data-i18n="label_format">Format</label>
+<select id="convertFormat"><option value="mp4">MP4</option><option value="webm">WebM</option><option value="mkv">MKV</option><option value="mov">MOV</option><option value="mp3">MP3</option><option value="wav">WAV</option></select>
+</div>
+</div>
+<div class="tab-content" id="tab-compress">
+<div class="form-group"><label data-i18n="label_quality">Kualitas</label>
+<select id="qualityValue"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option><option value="very-low">Very low</option></select>
+</div>
+</div>
+<button class="btn btn-primary" id="btnProcess" style="margin-top:8px" onclick="processMedia()" data-i18n="btn_process">Proses Sekarang</button>
+</div>
+<div class="card hidden" id="processSection">
+<div class="card-title">⏳ <span data-i18n="processing">Sedang diproses...</span></div>
+<div class="progress-bar"><div class="progress-fill" id="processProgressFill"></div></div>
+<div id="processStatus" class="status">...</div>
+</div>
+<div class="card hidden" id="resultSection">
+<div class="card-title">✅ <span data-i18n="result_title">Hasil Siap</span></div>
+<div class="preview-wrap">
+<video id="resultVideo" controls playsinline class="hidden"></video>
+<audio id="resultAudio" controls class="hidden"></audio>
+</div>
+<p class="hint" style="margin-bottom:12px" data-i18n="result_hint">File sudah diunduh otomatis. Cek Downloads.</p>
+<div style="display:flex;gap:10px">
+<a class="btn btn-success" id="btnDownload" download style="flex:1" data-i18n="btn_redownload">⬇️ Unduh Ulang</a>
+<button class="btn btn-secondary" onclick="resetApp()" style="flex:1" data-i18n="btn_new">Buat Baru</button>
+</div>
+</div>
+<div class="card">
+<div class="card-title">🧹 <span data-i18n="clean_title">Bersihkan Memori</span></div>
+<button class="btn btn-secondary" onclick="clearTemp()" data-i18n="btn_clear">Hapus File Sementara</button>
+<div class="status" id="cleanStatus"></div>
+</div>
+<footer>
+<span data-i18n="footer1">Diproses di browser dengan Mediabunny + WebCodecs.</span><br>
+<span data-i18n="footer2">File tidak pernah di-upload ke server.</span>
+</footer>
+>>>>>>> a5e96085a8e3a8bf08f654207cdf86283498fdd0
 </div>
 
 <script type="module">
@@ -176,8 +292,17 @@ const I18N = {
     subtitle:"Edit video & audio 100% di perangkatmu", badge:"Tidak ada upload • Privasi terjaga",
     engine_ok:"✅ Engine siap (Mediabunny + WebCodecs) — tanpa unduh 31 MB",
     pick_media:"Pilih Media", drop_hint:"Klik atau seret file ke sini", preview:"Preview",
+<<<<<<< HEAD
     tab_trim:"Potong", tab_extract:"Ekstrak Audio", tab_volume:"Volume", tab_speed:"Kecepatan", tab_rotate:"Rotasi", tab_convert:"Konversi", tab_compress:"Kompres",
     label_start:"Mulai (detik)", label_end:"Akhir (detik)", label_format:"Format", label_rotate:"Rotasi", label_quality:"Kualitas", label_volume:"Volume (0 – 2)", label_speed:"Kecepatan", hint_volume:"1 = normal, 0.5 = lebih pelan, 2 = lebih keras.", hint_speed:"Pitch audio ikut berubah.",
+=======
+    tab_trim:"Potong", tab_extract:"Ekstrak Audio", tab_volume:"Volume", tab_speed:"Kecepatan",
+    tab_rotate:"Rotasi", tab_convert:"Konversi", tab_compress:"Kompres",
+    label_start:"Mulai (detik)", label_end:"Akhir (detik)", label_format:"Format", label_rotate:"Rotasi",
+    label_quality:"Kualitas", label_volume:"Volume (0 – 2)", label_speed:"Kecepatan",
+    hint_volume:"1 = normal, 0.5 = lebih pelan, 2 = lebih keras.",
+    hint_speed:"Pitch audio ikut berubah.",
+>>>>>>> a5e96085a8e3a8bf08f654207cdf86283498fdd0
     btn_process:"Proses Sekarang", processing:"Sedang diproses...", result_title:"Hasil Siap",
     result_hint:"File sudah diunduh otomatis. Cek Downloads.", btn_redownload:"⬇️ Unduh Ulang", btn_new:"Buat Baru",
     clean_title:"Bersihkan Memori", btn_clear:"Hapus File Sementara",
@@ -187,8 +312,17 @@ const I18N = {
     subtitle:"Edit video & audio 100% on your device", badge:"No upload • Privacy first",
     engine_ok:"✅ Engine ready (Mediabunny + WebCodecs) — no 31 MB download",
     pick_media:"Choose Media", drop_hint:"Click or drop a file here", preview:"Preview",
+<<<<<<< HEAD
     tab_trim:"Trim", tab_extract:"Extract Audio", tab_volume:"Volume", tab_speed:"Speed", tab_rotate:"Rotate", tab_convert:"Convert", tab_compress:"Compress",
     label_start:"Start (sec)", label_end:"End (sec)", label_format:"Format", label_rotate:"Rotation", label_quality:"Quality", label_volume:"Volume (0 – 2)", label_speed:"Speed", hint_volume:"1 = normal, 0.5 = quieter, 2 = louder.", hint_speed:"Audio pitch will change with speed.",
+=======
+    tab_trim:"Trim", tab_extract:"Extract Audio", tab_volume:"Volume", tab_speed:"Speed",
+    tab_rotate:"Rotate", tab_convert:"Convert", tab_compress:"Compress",
+    label_start:"Start (sec)", label_end:"End (sec)", label_format:"Format", label_rotate:"Rotation",
+    label_quality:"Quality", label_volume:"Volume (0 – 2)", label_speed:"Speed",
+    hint_volume:"1 = normal, 0.5 = quieter, 2 = louder.",
+    hint_speed:"Audio pitch will change with speed.",
+>>>>>>> a5e96085a8e3a8bf08f654207cdf86283498fdd0
     btn_process:"Process Now", processing:"Processing...", result_title:"Result Ready",
     result_hint:"File was auto-downloaded. Check Downloads.", btn_redownload:"⬇️ Download Again", btn_new:"Start New",
     clean_title:"Clear Memory", btn_clear:"Clear Temp Files",
@@ -284,6 +418,47 @@ window.processMedia=async function(){
       outKey=$("extractFormat").value;
       opts.output=new Output({format:getFormat(outKey==="aac"?"mp4":outKey), target:new BufferTarget()});
       opts.video={discard:true};
+    } else if(activeTab==="volume"){
+      const vol=Math.max(0, Math.min(3, parseFloat($("volumeValue").value)||1));
+      outKey=isVideo?"mp4":"mp3";
+      opts.output=new Output({format:getFormat(outKey), target:new BufferTarget()});
+      opts.audio={
+        forceTranscode:true,
+        process:(sample)=>{
+          if(vol===1) return sample;
+          const optsCopy={planeIndex:0, format:"f32"};
+          const bytes=sample.allocationSize(optsCopy);
+          const floats=new Float32Array(bytes/4);
+          sample.copyTo(floats, optsCopy);
+          for(let i=0;i<floats.length;i++) floats[i]=Math.max(-1, Math.min(1, floats[i]*vol));
+          const out=new AudioSample({
+            data:floats.buffer,
+            format:"f32",
+            numberOfChannels:sample.numberOfChannels,
+            sampleRate:sample.sampleRate,
+            timestamp:sample.timestamp,
+          });
+          try{sample.close()}catch{}
+          return out;
+        }
+      };
+      if(isVideo) opts.video={};
+    } else if(activeTab==="speed"){
+      const speed=parseFloat($("speedValue").value)||1;
+      outKey=isVideo?"mp4":"mp3";
+      opts.output=new Output({format:getFormat(outKey), target:new BufferTarget()});
+      if(speed!==1){
+        if(isVideo){
+          opts.video={
+            forceTranscode:true,
+            process:(sample)=>{ try{sample.setTimestamp(sample.timestamp/speed)}catch{} return sample; }
+          };
+        }
+        opts.audio={
+          forceTranscode:true,
+          process:(sample)=>{ try{sample.setTimestamp(sample.timestamp/speed)}catch{} return sample; }
+        };
+      }
     } else if(activeTab==="rotate"){
       const rot=parseInt($("rotateValue").value,10)||0;
       outKey="mp4";
