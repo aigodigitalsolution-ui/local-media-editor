@@ -1,1 +1,446 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Local Media Editor</title>
+  <style>
+    :root { --bg: #0f1115; --surface: #1a1d24; --surface2: #242830; --border: #2e333d; --text: #e8eaed; --text-dim: #9aa0a6; --accent: #7c5cff; --success: #34d399; --danger: #f87171; --radius: 14px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 16px; padding-bottom: 80px; }
+    .container { max-width: 720px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 28px; padding-top: 12px; }
+    header h1 { font-size: 1.6rem; font-weight: 700; background: linear-gradient(135deg, #a78bfa, #7c5cff, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px; }
+    header p { color: var(--text-dim); font-size: 0.9rem; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(52, 211, 153, 0.12); color: var(--success); font-size: 0.75rem; font-weight: 600; padding: 4px 10px; border-radius: 999px; margin-top: 10px; }
+    .lang-switch { display: flex; gap: 6px; justify-content: center; margin-top: 12px; }
+    .lang-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); border-radius: 8px; padding: 6px 12px; font-size: 0.78rem; font-weight: 600; cursor: pointer; }
+    .lang-btn.active { background: rgba(124, 92, 255, 0.2); border-color: var(--accent); color: #c4b5fd; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 16px; }
+    .card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 14px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 10px; padding: 12px 18px; font-size: 0.95rem; font-weight: 600; cursor: pointer; width: 100%; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .btn-success { background: var(--success); color: #064e3b; }
+    .dropzone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 36px 20px; text-align: center; cursor: pointer; background: var(--surface2); }
+    .hidden { display: none !important; }
+    .tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 14px; }
+    .tab { flex-shrink: 0; padding: 8px 14px; border-radius: 8px; background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+    .tab.active { background: rgba(124, 92, 255, 0.18); border-color: var(--accent); color: #c4b5fd; }
+    .tab-content { display: none; } .tab-content.active { display: block; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 6px; }
+    .form-group input, .form-group select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; color: var(--text); font-size: 0.95rem; }
+    .progress-bar { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; margin: 12px 0; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #60a5fa); width: 0%; transition: width 0.3s; border-radius: 4px; }
+    .preview-wrap { background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 12px; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; }
+    .preview-wrap video, .preview-wrap audio { width: 100%; max-height: 320px; }
+    .hint { font-size: 0.78rem; color: var(--text-dim); margin-top: 8px; line-height: 1.4; }
+    .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .status { font-size: 0.85rem; color: var(--text-dim); margin-top: 10px; line-height: 1.5; }
+    footer { text-align: center; margin-top: 32px; color: var(--text-dim); font-size: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Local Media Editor</h1>
+      <p data-i18n="subtitle">Edit video & audio 100% di perangkatmu</p>
+      <div class="badge"><span>🔒</span> <span data-i18n="badge">Tidak ada upload • Privasi terjaga</span></div>
+      <div class="lang-switch">
+        <button class="lang-btn active" id="langId" onclick="setLang('id')">🇮🇩 ID</button>
+        <button class="lang-btn" id="langEn" onclick="setLang('en')">🇬🇧 EN</button>
+      </div>
+    </header>
+
+    <div class="card" id="loadSection">
+      <div class="card-title">⚙️ <span data-i18n="init_title">Inisialisasi Engine</span></div>
+      <button class="btn btn-primary" id="btnLoad" onclick="loadFFmpeg()" data-i18n="btn_load">Muat FFmpeg.wasm (~31 MB)</button>
+      <div class="status" id="loadStatus">Klik tombol. Pertama kali di HP bisa 1–3 menit. Setelah itu di-cache. Pakai WiFi.</div>
+      <div class="progress-bar hidden" id="loadProgressBar"><div class="progress-fill" id="loadProgressFill"></div></div>
+    </div>
+
+    <div class="card hidden" id="uploadSection">
+      <div class="card-title">📁 <span data-i18n="pick_media">Pilih Media</span></div>
+      <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+        <div style="font-size:2.4rem;margin-bottom:8px">🎬</div>
+        <strong data-i18n="drop_hint">Klik atau seret file ke sini</strong>
+        <p style="color:var(--text-dim);font-size:0.9rem;margin-top:8px">Video / Audio</p>
+      </div>
+      <input type="file" id="fileInput" accept="video/*,audio/*" style="display:none" />
+      <div id="fileInfo" style="margin-top:12px;font-size:0.8rem;color:var(--text-dim)"></div>
+    </div>
+
+    <div class="card hidden" id="editorSection">
+      <div class="card-title">▶️ <span data-i18n="preview">Preview</span></div>
+      <div class="preview-wrap"><video id="previewVideo" controls playsinline></video><audio id="previewAudio" controls class="hidden"></audio></div>
+      <div class="tabs">
+        <div class="tab active" data-tab="trim" data-i18n="tab_trim">Potong</div>
+        <div class="tab" data-tab="extract" data-i18n="tab_extract">Ekstrak Audio</div>
+        <div class="tab" data-tab="volume" data-i18n="tab_volume">Volume</div>
+        <div class="tab" data-tab="speed" data-i18n="tab_speed">Kecepatan</div>
+        <div class="tab" data-tab="rotate" data-i18n="tab_rotate">Rotasi</div>
+        <div class="tab" data-tab="convert" data-i18n="tab_convert">Konversi</div>
+        <div class="tab" data-tab="compress" data-i18n="tab_compress">Kompres</div>
+      </div>
+      <div class="tab-content active" id="tab-trim">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group"><label>Start (s)</label><input type="number" id="trimStart" value="0" min="0" step="0.1" /></div>
+          <div class="form-group"><label>End (s)</label><input type="number" id="trimEnd" value="" min="0" step="0.1" placeholder="empty=end" /></div>
+        </div>
+      </div>
+      <div class="tab-content" id="tab-extract"><div class="form-group"><label>Format</label><select id="extractFormat"><option value="mp3">MP3</option><option value="aac">AAC</option><option value="wav">WAV</option><option value="ogg">OGG</option></select></div></div>
+      <div class="tab-content" id="tab-volume"><div class="form-group"><label>Volume (0–2)</label><input type="number" id="volumeValue" value="1.0" min="0" max="3" step="0.1" /></div></div>
+      <div class="tab-content" id="tab-speed"><div class="form-group"><label>Speed</label><select id="speedValue"><option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></div></div>
+      <div class="tab-content" id="tab-rotate"><div class="form-group"><label>Rotate</label><select id="rotateValue"><option value="0">None</option><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></div></div>
+      <div class="tab-content" id="tab-convert"><div class="form-group"><label>Format</label><select id="convertFormat"><option value="mp4">MP4</option><option value="webm">WebM</option><option value="mkv">MKV</option><option value="mov">MOV</option><option value="mp3">MP3</option><option value="wav">WAV</option></select></div></div>
+      <div class="tab-content" id="tab-compress"><div class="form-group"><label>CRF</label><select id="crfValue"><option value="18">18 high</option><option value="23" selected>23 balanced</option><option value="28">28 small</option><option value="32">32 tiny</option></select></div></div>
+      <button class="btn btn-primary" id="btnProcess" style="margin-top:8px" onclick="processMedia()" data-i18n="btn_process">Proses Sekarang</button>
+    </div>
+
+    <div class="card hidden" id="processSection">
+      <div class="card-title">⏳ ...</div>
+      <div class="progress-bar"><div class="progress-fill" id="processProgressFill"></div></div>
+      <div id="processStatus" class="status">...</div>
+      <div id="logBox" style="background:#0d0f12;border:1px solid var(--border);border-radius:8px;padding:10px;font-family:monospace;font-size:0.72rem;color:#94a3b8;max-height:120px;overflow-y:auto;margin-top:10px;white-space:pre-wrap"></div>
+    </div>
+
+    <div class="card hidden" id="resultSection">
+      <div class="card-title">✅ <span data-i18n="result_title">Hasil Siap</span></div>
+      <div class="preview-wrap"><video id="resultVideo" controls playsinline class="hidden"></video><audio id="resultAudio" controls class="hidden"></audio></div>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <a class="btn btn-success" id="btnDownload" download style="flex:1" data-i18n="btn_redownload">⬇️ Unduh Ulang</a>
+        <button class="btn btn-secondary" onclick="resetApp()" style="flex:1" data-i18n="btn_new">Buat Baru</button>
+      </div>
+    </div>
+
+    <div class="card" id="cleanSection">
+      <div class="card-title">🧹 <span data-i18n="clean_title">Bersihkan Penyimpanan</span></div>
+      <p class="hint" style="margin-bottom:12px">FFmpeg cache (~31 MB) + temp blobs. Downloads folder: delete manually.</p>
+      <button class="btn btn-secondary" id="btnClearCache" onclick="clearCacheAndTemp()" data-i18n="btn_clear">Hapus Cache & File Sementara</button>
+      <div class="status" id="cleanStatus"></div>
+    </div>
+
+    <footer>
+      <span data-i18n="footer1">Semua proses berjalan di browser kamu menggunakan FFmpeg.wasm.</span><br>
+      <span data-i18n="footer2">File tidak pernah meninggalkan perangkat.</span>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { FFmpeg } from "https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.15/dist/esm/index.js";
+    import { fetchFile, toBlobURL } from "https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.2/dist/esm/index.js";
+
+    let ffmpeg = null, loaded = false, currentFile = null, currentFileName = "", isVideo = true, outputBlob = null;
+    const $ = (id) => document.getElementById(id);
+
+    const I18N = {
+      id: {
+        subtitle: "Edit video & audio 100% di perangkatmu",
+        badge: "Tidak ada upload • Privasi terjaga",
+        init_title: "Inisialisasi Engine",
+        btn_load: "Muat FFmpeg.wasm (~31 MB)",
+        btn_ready: "✅ Engine Siap",
+        pick_media: "Pilih Media",
+        drop_hint: "Klik atau seret file ke sini",
+        preview: "Preview",
+        tab_trim: "Potong", tab_extract: "Ekstrak Audio", tab_volume: "Volume", tab_speed: "Kecepatan",
+        tab_rotate: "Rotasi", tab_convert: "Konversi", tab_compress: "Kompres",
+        btn_process: "Proses Sekarang", result_title: "Hasil Siap",
+        btn_redownload: "⬇️ Unduh Ulang", btn_new: "Buat Baru",
+        clean_title: "Bersihkan Penyimpanan", btn_clear: "Hapus Cache & File Sementara",
+        footer1: "Semua proses berjalan di browser kamu menggunakan FFmpeg.wasm.",
+        footer2: "File tidak pernah meninggalkan perangkat.",
+        load_hint: "Klik tombol. Pertama kali di HP bisa 1–3 menit. Setelah itu di-cache. Pakai WiFi."
+      },
+      en: {
+        subtitle: "Edit video & audio 100% on your device",
+        badge: "No upload • Privacy first",
+        init_title: "Initialize Engine",
+        btn_load: "Load FFmpeg.wasm (~31 MB)",
+        btn_ready: "✅ Engine Ready",
+        pick_media: "Choose Media",
+        drop_hint: "Click or drop a file here",
+        preview: "Preview",
+        tab_trim: "Trim", tab_extract: "Extract Audio", tab_volume: "Volume", tab_speed: "Speed",
+        tab_rotate: "Rotate", tab_convert: "Convert", tab_compress: "Compress",
+        btn_process: "Process Now", result_title: "Result Ready",
+        btn_redownload: "⬇️ Download Again", btn_new: "Start New",
+        clean_title: "Clear Storage", btn_clear: "Clear Cache & Temp Files",
+        footer1: "All processing runs in your browser using FFmpeg.wasm.",
+        footer2: "Files never leave your device.",
+        load_hint: "Click the button. First time on phone may take 1–3 min. Then cached. Use WiFi."
+      }
+    };
+    let currentLang = localStorage.getItem("lme_lang") || "id";
+    window.setLang = function (lang) {
+      if (!I18N[lang]) return;
+      currentLang = lang;
+      localStorage.setItem("lme_lang", lang);
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (I18N[lang][key] != null) el.textContent = I18N[lang][key];
+      });
+      $("langId")?.classList.toggle("active", lang === "id");
+      $("langEn")?.classList.toggle("active", lang === "en");
+      if (!loaded && $("loadStatus")) $("loadStatus").textContent = I18N[lang].load_hint;
+      if ($("btnLoad")) $("btnLoad").textContent = loaded ? I18N[lang].btn_ready : I18N[lang].btn_load;
+      document.documentElement.lang = lang === "id" ? "id" : "en";
+    };
+    function t(key) { return (I18N[currentLang] && I18N[currentLang][key]) || I18N.id[key] || key; }
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+        tab.classList.add("active");
+        $(`tab-${tab.dataset.tab}`).classList.add("active");
+      });
+    });
+
+    const dropzone = $("dropzone");
+    dropzone.addEventListener("dragover", e => { e.preventDefault(); });
+    dropzone.addEventListener("drop", e => { e.preventDefault(); if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
+    $("fileInput").addEventListener("change", e => { if (e.target.files.length) handleFile(e.target.files[0]); });
+
+    const CACHE_NAME = "ffmpeg-core-v1";
+    async function getCachedOrFetch(url, mime) {
+      try {
+        const cache = await caches.open(CACHE_NAME);
+        let res = await cache.match(url);
+        if (res) return URL.createObjectURL(await res.blob());
+        res = await fetch(url);
+        if (!res.ok) throw new Error("Fetch failed: " + res.status);
+        await cache.put(url, res.clone());
+        return URL.createObjectURL(new Blob([await res.blob()], { type: mime }));
+      } catch (e) {
+        return toBlobURL(url, mime);
+      }
+    }
+
+    window.loadFFmpeg = async function () {
+      const btn = $("btnLoad"), status = $("loadStatus"), bar = $("loadProgressBar"), fill = $("loadProgressFill");
+      btn.disabled = true;
+      btn.innerHTML = `<div class="spinner"></div> ...`;
+      bar.classList.remove("hidden");
+      fill.style.width = "5%";
+      status.textContent = t("load_hint");
+      const timeoutId = setTimeout(() => { status.innerHTML = currentLang === "id" ? "⚠️ Masih compile WASM di HP (normal).<br><small>Jangan tutup tab.</small>" : "⚠️ Still compiling WASM on phone (normal).<br><small>Don't close the tab.</small>"; }, 60000);
+      try {
+        ffmpeg = new FFmpeg();
+        ffmpeg.on("log", ({ message }) => {
+          const lb = $("logBox"); if (lb) { lb.textContent += message + "\n"; lb.scrollTop = lb.scrollHeight; }
+        });
+        ffmpeg.on("progress", ({ progress }) => {
+          const pct = Math.min(100, Math.round(progress * 100));
+          $("processProgressFill").style.width = pct + "%";
+          $("processStatus").textContent = (currentLang === "id" ? "Memproses... " : "Processing... ") + pct + "%";
+        });
+        const coreBase = "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm";
+        fill.style.width = "25%";
+        const coreURL = await getCachedOrFetch(`${coreBase}/ffmpeg-core.js`, "text/javascript");
+        fill.style.width = "45%";
+        let fake = 45;
+        const fakeTimer = setInterval(() => { if (fake < 80) { fake += Math.random() * 2.5; fill.style.width = Math.min(80, fake) + "%"; } }, 1200);
+        const wasmURL = await getCachedOrFetch(`${coreBase}/ffmpeg-core.wasm`, "application/wasm");
+        clearInterval(fakeTimer);
+        fill.style.width = "85%";
+        status.innerHTML = currentLang === "id" ? "⚙️ Compile WASM... (30–180 dtk di HP)" : "⚙️ Compiling WASM... (30–180s on phone)";
+        let wakeLock = null;
+        try { if (navigator.wakeLock) wakeLock = await navigator.wakeLock.request("screen"); } catch (_) {}
+        try {
+          await ffmpeg.load({ coreURL, wasmURL });
+        } catch (e1) {
+          const classWorkerURL = await getCachedOrFetch("https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/worker.js", "text/javascript");
+          await ffmpeg.load({ coreURL, wasmURL, classWorkerURL });
+        }
+        if (wakeLock) try { await wakeLock.release(); } catch (_) {}
+        clearTimeout(timeoutId);
+        loaded = true;
+        fill.style.width = "100%";
+        status.textContent = currentLang === "id" ? "✅ FFmpeg siap!" : "✅ FFmpeg ready!";
+        status.style.color = "var(--success)";
+        btn.textContent = t("btn_ready");
+        btn.classList.remove("btn-primary");
+        btn.classList.add("btn-success");
+        $("uploadSection").classList.remove("hidden");
+      } catch (err) {
+        clearTimeout(timeoutId);
+        status.textContent = "❌ " + (err.message || err);
+        status.style.color = "var(--danger)";
+        btn.disabled = false;
+        btn.textContent = t("btn_load");
+        fill.style.width = "0%";
+      }
+    };
+
+    function handleFile(file) {
+      if (!file) return;
+      currentFile = file; currentFileName = file.name; isVideo = file.type.startsWith("video/");
+      $("fileInfo").textContent = `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+      const v = $("previewVideo"), a = $("previewAudio");
+      if (v.src && v.src.startsWith("blob:")) URL.revokeObjectURL(v.src);
+      if (a.src && a.src.startsWith("blob:")) URL.revokeObjectURL(a.src);
+      const url = URL.createObjectURL(file);
+      if (isVideo) { v.src = url; v.classList.remove("hidden"); a.classList.add("hidden"); }
+      else { a.src = url; a.classList.remove("hidden"); v.classList.add("hidden"); }
+      const m = isVideo ? v : a;
+      m.onloadedmetadata = () => { $("trimEnd").value = m.duration.toFixed(1); };
+      $("editorSection").classList.remove("hidden");
+      $("resultSection").classList.add("hidden");
+      $("processSection").classList.add("hidden");
+    }
+
+    window.processMedia = async function () {
+      if (!loaded || !currentFile) return;
+      const activeTab = document.querySelector(".tab.active").dataset.tab;
+      $("processSection").classList.remove("hidden");
+      $("resultSection").classList.add("hidden");
+      $("logBox").textContent = "";
+      $("processProgressFill").style.width = "0%";
+      $("processStatus").textContent = currentLang === "id" ? "Menulis file..." : "Writing file...";
+      $("btnProcess").disabled = true;
+      try {
+        const old = ["input","output","input.mp4","input.webm","input.mov","input.mkv","input.mp3","input.wav","output.mp4","output.webm","output.mp3","output.wav"];
+        for (const f of old) { try { await ffmpeg.deleteFile(f); } catch (e) {} }
+        const inputData = await fetchFile(currentFile);
+        const ext = currentFileName.split(".").pop().toLowerCase() || (isVideo ? "mp4" : "mp3");
+        const inputName = `input.${ext}`;
+        await ffmpeg.writeFile(inputName, inputData);
+        let args = [], outExt = "mp4", outMime = "video/mp4";
+        if (activeTab === "trim") {
+          const start = parseFloat($("trimStart").value) || 0, endVal = $("trimEnd").value;
+          args = ["-ss", String(start), "-i", inputName];
+          if (endVal !== "" && !isNaN(parseFloat(endVal))) { const d = parseFloat(endVal) - start; if (d > 0) args.push("-t", String(d)); }
+          args.push("-c", "copy", "-avoid_negative_ts", "make_zero", "output." + ext);
+          outExt = ext; outMime = currentFile.type || (isVideo ? "video/mp4" : "audio/mpeg");
+        } else if (activeTab === "extract") {
+          const fmt = $("extractFormat").value; outExt = fmt;
+          args = ["-i", inputName, "-vn", "-y"];
+          if (fmt === "mp3") { args.push("-acodec", "libmp3lame", "-q:a", "2"); outMime = "audio/mpeg"; }
+          else if (fmt === "aac") { args.push("-acodec", "aac", "-b:a", "128k"); outMime = "audio/aac"; }
+          else if (fmt === "wav") { args.push("-acodec", "pcm_s16le"); outMime = "audio/wav"; }
+          else { args.push("-acodec", "libvorbis", "-q:a", "4"); outMime = "audio/ogg"; }
+          args.push(`output.${outExt}`);
+        } else if (activeTab === "volume") {
+          const vol = parseFloat($("volumeValue").value) || 1;
+          outExt = isVideo ? "mp4" : "mp3"; outMime = isVideo ? "video/mp4" : "audio/mpeg";
+          if (isVideo) args = ["-i", inputName, "-af", `volume=${vol}`, "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", `output.${outExt}`];
+          else args = ["-i", inputName, "-af", `volume=${vol}`, "-c:a", "libmp3lame", "-q:a", "2", `output.${outExt}`];
+        } else if (activeTab === "speed") {
+          const speed = parseFloat($("speedValue").value) || 1;
+          outExt = isVideo ? "mp4" : "mp3"; outMime = isVideo ? "video/mp4" : "audio/mpeg";
+          if (isVideo) {
+            const pts = (1 / speed).toFixed(4);
+            args = ["-i", inputName, "-filter:v", `setpts=${pts}*PTS`, "-filter:a", `atempo=${speed}`, "-c:v", "libx264", "-preset", "ultrafast", "-crf", "23", "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", "-shortest", `output.${outExt}`];
+          } else args = ["-i", inputName, "-filter:a", `atempo=${speed}`, "-c:a", "libmp3lame", "-q:a", "2", `output.${outExt}`];
+        } else if (activeTab === "rotate") {
+          const rot = $("rotateValue").value; outExt = "mp4"; outMime = "video/mp4";
+          let vf = ""; if (rot === "90") vf = "transpose=1"; else if (rot === "180") vf = "transpose=2,transpose=2"; else if (rot === "270") vf = "transpose=2";
+          if (vf) args = ["-i", inputName, "-vf", vf, "-c:v", "libx264", "-preset", "ultrafast", "-crf", "23", "-c:a", "copy", "-movflags", "+faststart", `output.${outExt}`];
+          else args = ["-i", inputName, "-c", "copy", `output.${outExt}`];
+        } else if (activeTab === "convert") {
+          const fmt = $("convertFormat").value; outExt = fmt;
+          if (fmt === "mp4") { args = ["-i", inputName, "-c:v", "libx264", "-preset", "ultrafast", "-crf", "23", "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", "output.mp4"]; outMime = "video/mp4"; }
+          else if (fmt === "webm") { args = ["-i", inputName, "-c:v", "libvpx-vp9", "-deadline", "realtime", "-cpu-used", "8", "-crf", "30", "-b:v", "0", "-c:a", "libopus", "-b:a", "96k", "output.webm"]; outMime = "video/webm"; }
+          else if (fmt === "mkv") { args = ["-i", inputName, "-c", "copy", "output.mkv"]; outMime = "video/x-matroska"; }
+          else if (fmt === "mov") { args = ["-i", inputName, "-c", "copy", "output.mov"]; outMime = "video/quicktime"; }
+          else if (fmt === "mp3") { args = ["-i", inputName, "-vn", "-acodec", "libmp3lame", "-q:a", "2", "output.mp3"]; outMime = "audio/mpeg"; }
+          else if (fmt === "wav") { args = ["-i", inputName, "-vn", "-acodec", "pcm_s16le", "output.wav"]; outMime = "audio/wav"; }
+        } else if (activeTab === "compress") {
+          const crf = $("crfValue").value; outExt = "mp4"; outMime = "video/mp4";
+          args = ["-i", inputName, "-c:v", "libx264", "-preset", "veryfast", "-crf", crf, "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", "output.mp4"];
+        }
+        $("processStatus").textContent = currentLang === "id" ? "Menjalankan FFmpeg..." : "Running FFmpeg...";
+        await ffmpeg.exec(args);
+        try { await ffmpeg.deleteFile(inputName); } catch (e) {}
+        const data = await ffmpeg.readFile(`output.${outExt}`);
+        try { await ffmpeg.deleteFile(`output.${outExt}`); } catch (e) {}
+        if (outputBlob) { try { URL.revokeObjectURL($("btnDownload").href); } catch (e) {} }
+        outputBlob = new Blob([data.buffer], { type: outMime });
+        const name = currentFileName.replace(/\.[^/.]+$/, "") + "_edited." + outExt;
+        const url = URL.createObjectURL(outputBlob);
+        const rv = $("resultVideo"), ra = $("resultAudio");
+        if (outMime.startsWith("video/")) { rv.src = url; rv.classList.remove("hidden"); ra.classList.add("hidden"); }
+        else { ra.src = url; ra.classList.remove("hidden"); rv.classList.add("hidden"); }
+        const dl = $("btnDownload"); dl.href = url; dl.download = name;
+        try { const a = document.createElement("a"); a.href = url; a.download = name; a.style.display = "none"; document.body.appendChild(a); a.click(); setTimeout(() => document.body.removeChild(a), 1000); } catch (e) {}
+        $("processSection").classList.add("hidden");
+        $("resultSection").classList.remove("hidden");
+        $("processProgressFill").style.width = "100%";
+      } catch (err) {
+        console.error(err);
+        $("processStatus").textContent = "Error: " + (err.message || err);
+        $("processStatus").style.color = "var(--danger)";
+      } finally {
+        $("btnProcess").disabled = false;
+      }
+    };
+
+    window.clearCacheAndTemp = async function () {
+      const status = $("cleanStatus"), btn = $("btnClearCache");
+      btn.disabled = true;
+      status.textContent = "...";
+      let freed = [];
+      try {
+        if ("caches" in window) {
+          if (await caches.delete("ffmpeg-core-v1")) freed.push("FFmpeg cache");
+          for (const k of await caches.keys()) {
+            if (k.includes("ffmpeg") || k.includes("wasm")) { await caches.delete(k); freed.push(k); }
+          }
+        }
+        ["previewVideo","previewAudio","resultVideo","resultAudio"].forEach(id => {
+          const el = $(id);
+          if (el && el.src && el.src.startsWith("blob:")) { URL.revokeObjectURL(el.src); el.removeAttribute("src"); if (el.load) el.load(); }
+        });
+        if (ffmpeg && loaded) {
+          for (const f of ["input","output","input.mp4","input.webm","input.mov","input.mkv","input.mp3","input.wav","output.mp4","output.webm","output.mp3","output.wav"]) {
+            try { await ffmpeg.deleteFile(f); } catch (e) {}
+          }
+          freed.push("Virtual FS");
+        }
+        currentFile = null; outputBlob = null;
+        $("fileInput").value = ""; $("fileInfo").textContent = "";
+        $("editorSection").classList.add("hidden"); $("resultSection").classList.add("hidden"); $("processSection").classList.add("hidden");
+        let storageInfo = "";
+        try {
+          if (navigator.storage && navigator.storage.estimate) {
+            const est = await navigator.storage.estimate();
+            storageInfo = ` (~${((est.usage||0)/1024/1024).toFixed(1)} MB / ${((est.quota||0)/1024/1024).toFixed(0)} MB)`;
+          }
+        } catch (e) {}
+        status.innerHTML = "✅ " + (freed.length ? freed.join(", ") : "temp") + storageInfo;
+        status.style.color = "var(--success)";
+      } catch (err) {
+        status.textContent = "❌ " + (err.message || err);
+        status.style.color = "var(--danger)";
+      } finally {
+        btn.disabled = false;
+      }
+    };
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden" && ffmpeg && loaded) {
+        ["input","output","input.mp4","input.webm","input.mov","input.mkv","input.mp3","input.wav","output.mp4","output.webm","output.mp3","output.wav"].forEach(async f => {
+          try { await ffmpeg.deleteFile(f); } catch (e) {}
+        });
+      }
+    });
+
+    window.resetApp = function () {
+      currentFile = null; outputBlob = null;
+      $("fileInput").value = ""; $("fileInfo").textContent = "";
+      $("editorSection").classList.add("hidden"); $("resultSection").classList.add("hidden"); $("processSection").classList.add("hidden");
+      ["previewVideo","previewAudio","resultVideo","resultAudio"].forEach(id => {
+        const el = $(id);
+        if (el && el.src && el.src.startsWith("blob:")) URL.revokeObjectURL(el.src);
+        el.src = "";
+      });
+    };
+
+    setTimeout(() => setLang(currentLang), 0);
+  </script>
+</body>
+</html>
